@@ -1,6 +1,6 @@
 # flutter_map_polyline
 
-A new Flutter application.
+Simple map interface with origin and destination polyline demonstration.
 
 ## Getting Started
 
