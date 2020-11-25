@@ -293,7 +293,7 @@ class _MapViewState extends State<MapView> {
       Secrets.API_KEY, // Google Maps API Key
       PointLatLng(start.latitude, start.longitude),
       PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.transit,
+      travelMode: TravelMode.bicycling,
     );
 
     if (result.points.isNotEmpty) {
@@ -329,7 +329,6 @@ class _MapViewState extends State<MapView> {
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
-            // Map View
             GoogleMap(
               markers: markers != null ? Set<Marker>.from(markers) : null,
               initialCameraPosition: _initialLocation,
