@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';// Stores the Google Maps API Key
+import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,6 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' show cos, sqrt, asin;
 
 import 'secrets.dart';
+import 'test_two.dart';
+import 'user/home_search.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MapView(),
+      home: HomeSearch(),
     );
   }
 }
