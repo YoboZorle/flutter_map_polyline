@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_map_polyline/secrets.dart';
 import 'package:http/http.dart';
 
 class Place {
@@ -42,13 +41,13 @@ class PlaceApiProvider {
 
   final sessionToken;
 
-  static final String androidKey = Secrets.API_KEY;
-  static final String iosKey = Secrets.API_KEY;
+  static final String androidKey = 'AIzaSyAPV3djPp_HceZIbgK4M4jRadHA-d08ECg';
+  static final String iosKey = 'AIzaSyAPV3djPp_HceZIbgK4M4jRadHA-d08ECg';
   final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
   Future<List<Suggestion>> fetchSuggestions(String input, String lang) async {
     final request =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=address&language=$lang&components=country:ch&key=$apiKey&sessiontoken=$sessionToken';
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=address&language=$lang&components=country:ng&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(request);
 
     if (response.statusCode == 200) {

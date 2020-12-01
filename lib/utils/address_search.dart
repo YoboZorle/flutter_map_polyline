@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map_polyline/user/place_service.dart';
+
+import 'place_service.dart';
 
 class AddressSearch extends SearchDelegate<Suggestion> {
   AddressSearch(this.sessionToken) {

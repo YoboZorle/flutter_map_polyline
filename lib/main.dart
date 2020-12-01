@@ -3,12 +3,14 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import 'dart:math' show cos, sqrt, asin;
 
 import 'secrets.dart';
-import 'test_two.dart';
-import 'user/home_search.dart';
+import 'utils/address_search.dart';
+import 'utils/place_service.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -19,13 +21,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Maps',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeSearch(),
+      theme: customTheme,
+      routes: {
+        "/": (_) => MapView(),
+        // "/search": (_) => CustomSearchScaffold(),
+      },
     );
   }
 }
+
+final customTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  brightness: Brightness.light,
+  accentColor: Colors.redAccent,
+  inputDecorationTheme: InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(4.00)),
+    ),
+    contentPadding: EdgeInsets.symmetric(
+      vertical: 12.50,
+      horizontal: 10.00,
+    ),
+  ),
+);
 
 class MapView extends StatefulWidget {
   @override
@@ -33,7 +51,7 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
+  CameraPosition _initialLocation = CameraPosition(target: LatLng(4.815554, 7.049844));
   GoogleMapController mapController;
 
   Position _currentPosition;
@@ -56,9 +74,11 @@ class _MapViewState extends State<MapView> {
   List<LatLng> polylineCoordinates = [];
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final sessionToken = Uuid().v4();
 
   Widget _textField({
     TextEditingController controller,
+    Function onTap,
     FocusNode focusNode,
     String label,
     String hint,
@@ -73,6 +93,8 @@ class _MapViewState extends State<MapView> {
         onChanged: (value) {
           locationCallback(value);
         },
+        readOnly: true,
+        onTap: onTap,
         controller: controller,
         focusNode: focusNode,
         decoration: new InputDecoration(
@@ -309,7 +331,7 @@ class _MapViewState extends State<MapView> {
       polylineId: id,
       color: Colors.red,
       points: polylineCoordinates,
-      width: 3,
+      width: 5,
     );
     polylines[id] = polyline;
   }
@@ -318,6 +340,12 @@ class _MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    startAddressController.dispose();
+    super.dispose();
   }
 
   @override
@@ -434,8 +462,23 @@ class _MapViewState extends State<MapView> {
                               locationCallback: (String value) {
                                 setState(() {
                                   _startAddress = value;
+                                 
                                 });
-                              }),
+                              },
+                            onTap: () async {
+                              final Suggestion result = await showSearch(
+                                context: context,
+                                delegate: AddressSearch(sessionToken),
+                              );
+                              // This will change the text displayed in the TextField
+                              if (result != null) {
+                                setState(() {
+                                  startAddressController.text = result.description;
+                                  _startAddress = startAddressController.text;
+                                });
+                              }
+                            },
+                          ),
                           SizedBox(height: 10),
                           _textField(
                               label: 'Destination',
@@ -447,8 +490,23 @@ class _MapViewState extends State<MapView> {
                               locationCallback: (String value) {
                                 setState(() {
                                   _destinationAddress = value;
+
                                 });
-                              }),
+                              },
+                            onTap: () async {
+                              final Suggestion result = await showSearch(
+                                context: context,
+                                delegate: AddressSearch(sessionToken),
+                              );
+                              // This will change the text displayed in the TextField
+                              if (result != null) {
+                                setState(() {
+                                  destinationAddressController.text = result.description;
+                                  _destinationAddress = destinationAddressController.text;
+                                });
+                              }
+                            },
+                          ),
                           SizedBox(height: 10),
                           Visibility(
                             visible: _placeDistance == null ? false : true,
@@ -463,7 +521,10 @@ class _MapViewState extends State<MapView> {
                           SizedBox(height: 5),
                           RaisedButton(
                             onPressed: (_startAddress != '' && _destinationAddress != '')
-                                ? () async {
+                                ?
+
+
+                                () async {
                               startAddressFocusNode.unfocus();
                               desrinationAddressFocusNode.unfocus();
                               setState(() {
@@ -473,7 +534,6 @@ class _MapViewState extends State<MapView> {
                                   polylineCoordinates.clear();
                                 _placeDistance = null;
                               });
-
                               _calculateDistance().then((isCalculated) {
                                 if (isCalculated) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -490,7 +550,13 @@ class _MapViewState extends State<MapView> {
                                 }
                               });
                             }
+
+
+
                                 : null,
+
+
+
                             color: Colors.red,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
