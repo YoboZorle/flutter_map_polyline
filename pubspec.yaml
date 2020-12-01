@@ -36,8 +36,9 @@ dependencies:
 
   flutter_google_places: ^0.2.6
   google_maps_webservice: ^0.0.18
-  uuid: ^2.0.4
-  http: ^0.12.1
+  uuid: ^2.2.2
+
+  google_place: ^0.3.3
 
 dev_dependencies:
   flutter_test:

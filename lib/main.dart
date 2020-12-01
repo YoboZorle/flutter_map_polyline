@@ -3,14 +3,11 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 import 'dart:math' show cos, sqrt, asin;
 
 import 'secrets.dart';
-import 'utils/address_search.dart';
-import 'utils/place_service.dart';
-
+import 'test_two.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Maps',
       theme: customTheme,
       routes: {
-        "/": (_) => MapView(),
+        "/": (_) => TestTwo(),
         // "/search": (_) => CustomSearchScaffold(),
       },
     );
@@ -74,7 +71,6 @@ class _MapViewState extends State<MapView> {
   List<LatLng> polylineCoordinates = [];
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final sessionToken = Uuid().v4();
 
   Widget _textField({
     TextEditingController controller,
@@ -93,7 +89,6 @@ class _MapViewState extends State<MapView> {
         onChanged: (value) {
           locationCallback(value);
         },
-        readOnly: true,
         onTap: onTap,
         controller: controller,
         focusNode: focusNode,
@@ -343,12 +338,6 @@ class _MapViewState extends State<MapView> {
   }
 
   @override
-  void dispose() {
-    startAddressController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
@@ -447,6 +436,9 @@ class _MapViewState extends State<MapView> {
                           SizedBox(height: 10),
                           _textField(
                               label: 'Start',
+                              onTap: (){
+
+                              },
                               hint: 'Choose starting point',
                               prefixIcon: Icon(Icons.looks_one),
                               suffixIcon: IconButton(
@@ -462,22 +454,8 @@ class _MapViewState extends State<MapView> {
                               locationCallback: (String value) {
                                 setState(() {
                                   _startAddress = value;
-                                 
                                 });
                               },
-                            onTap: () async {
-                              final Suggestion result = await showSearch(
-                                context: context,
-                                delegate: AddressSearch(sessionToken),
-                              );
-                              // This will change the text displayed in the TextField
-                              if (result != null) {
-                                setState(() {
-                                  startAddressController.text = result.description;
-                                  _startAddress = startAddressController.text;
-                                });
-                              }
-                            },
                           ),
                           SizedBox(height: 10),
                           _textField(
@@ -490,23 +468,8 @@ class _MapViewState extends State<MapView> {
                               locationCallback: (String value) {
                                 setState(() {
                                   _destinationAddress = value;
-
                                 });
-                              },
-                            onTap: () async {
-                              final Suggestion result = await showSearch(
-                                context: context,
-                                delegate: AddressSearch(sessionToken),
-                              );
-                              // This will change the text displayed in the TextField
-                              if (result != null) {
-                                setState(() {
-                                  destinationAddressController.text = result.description;
-                                  _destinationAddress = destinationAddressController.text;
-                                });
-                              }
-                            },
-                          ),
+                              }),
                           SizedBox(height: 10),
                           Visibility(
                             visible: _placeDistance == null ? false : true,
@@ -521,10 +484,7 @@ class _MapViewState extends State<MapView> {
                           SizedBox(height: 5),
                           RaisedButton(
                             onPressed: (_startAddress != '' && _destinationAddress != '')
-                                ?
-
-
-                                () async {
+                                ? () async {
                               startAddressFocusNode.unfocus();
                               desrinationAddressFocusNode.unfocus();
                               setState(() {
@@ -534,6 +494,7 @@ class _MapViewState extends State<MapView> {
                                   polylineCoordinates.clear();
                                 _placeDistance = null;
                               });
+
                               _calculateDistance().then((isCalculated) {
                                 if (isCalculated) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -550,13 +511,7 @@ class _MapViewState extends State<MapView> {
                                 }
                               });
                             }
-
-
-
                                 : null,
-
-
-
                             color: Colors.red,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),

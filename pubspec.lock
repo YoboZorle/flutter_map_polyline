@@ -156,8 +156,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.18"
-  http:
+  google_place:
     dependency: "direct main"
+    description:
+      name: google_place
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3"
+  http:
+    dependency: transitive
     description:
       name: http
       url: "https://pub.dartlang.org"
