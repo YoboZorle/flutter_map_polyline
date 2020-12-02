@@ -40,6 +40,8 @@ dependencies:
 
   google_place: ^0.3.3
 
+  google_places_flutter: ^2.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
